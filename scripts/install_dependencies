@@ -1,0 +1,22 @@
+#!/bin/bash
+yum install -y httpd
+rm /var/www/vhosts/html/htdocs/index.php
+
+theparam=$(aws ssm get-parameters --region ap-southeast-2 --names TestParam --query Parameters[0].Value)
+
+export MYPARAM=$theparam
+export MYOTHERPARAM=theOtherParam
+
+# set vars
+echo 'SetEnv MYOTHERPARAM theOtherParam3
+SetEnv MYPARAM '$theparam  >> /etc/httpd/conf.d/env.conf
+
+echo 'FcgidInitialEnv MYOTHERPARAM theOtherParam4
+FcgidInitialEnv MYPARAM '$theparam >> /etc/httpd/conf.d/env.conf
+
+echo 'export MYOTHERPARAM=theOtherParam2
+export MYPARAM='$theparam >> /etc/profile.d/env.sh
+
+
+service httpd restart
+service php-fpm restart

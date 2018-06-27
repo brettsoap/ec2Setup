@@ -1,22 +1,28 @@
 #!/bin/bash
 yum install -y httpd
-rm /var/www/vhosts/html/htdocs/index.php
 
-theparam=$(aws ssm get-parameters --region ap-southeast-2 --names TestParam --query Parameters[0].Value)
+yum install epel-release
 
-export MYPARAM=$theparam
-export MYOTHERPARAM=theOtherParam
+yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
 
-# set vars
-echo 'SetEnv MYOTHERPARAM theOtherParam3
-SetEnv MYPARAM '$theparam  >> /etc/httpd/conf.d/env.conf
+yum install yum-utils
 
-echo 'FcgidInitialEnv MYOTHERPARAM theOtherParam4
-FcgidInitialEnv MYPARAM '$theparam >> /etc/httpd/conf.d/env.conf
+yum-config-manager --enable remi-php72
 
-echo 'export MYOTHERPARAM=theOtherParam2
-export MYPARAM='$theparam >> /etc/profile.d/env.sh
+yum update
 
+yum install php72
 
-service httpd restart
-service php-fpm restart
+yum install php72-php-process php72-php-pdo php72-php-mysqlnd php72-php-imap php72-php-devel php72-php-bcmath php72-php-pecl-imagick php72-php-intl php72-php-pecl-jsonc php72-php-pecl-jsonc-devel php72-php-process php72-php-xml php72-php-xmlrpc php72-php-tidy php72-php-mcrypt php72-php-gd php72-php-pecl-memcache php72-php-pecl-ssh2 php72-php-mbstring php72-php-fpm php72-php-pear php72-php-pecl-mongodb
+
+echo 'error_log=/var/log/php_errors.log
+error_log=/var/log/php_errors.log
+error_log=/var/log/php_errors.log'  >> /etc/opt/remi/php72/php.d/60-soapcreative.ini
+
+yum install php72-php-fpm.x86_64
+
+systemctl enable php72-php-fpm.service
+
+service php72-php-fpm start
+
+yum install mod_fcgid -y

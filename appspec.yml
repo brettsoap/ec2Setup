@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /index.php
-    destination: /var/www/vhosts/html/htdocs/
+    destination: /var/www/html/
     overwrite: yes
 hooks:
   BeforeInstall:

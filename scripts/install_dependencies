@@ -1,28 +1,41 @@
 #!/bin/bash
-yum install -y httpd
+yum install httpd -y
+yum install epel-release -y
+yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm -y
+yum install yum-utils -y
+yum-config-manager --enable remi-php72
+yum update
+yum install php72 -y
+yum install php72-php-process php72-php-pdo php72-php-mysqlnd php72-php-imap php72-php-devel php72-php-bcmath php72-php-pecl-imagick php72-php-intl php72-php-pecl-jsonc php72-php-pecl-jsonc-devel php72-php-process php72-php-xml php72-php-xmlrpc php72-php-tidy php72-php-mcrypt php72-php-gd php72-php-pecl-memcache php72-php-pecl-ssh2 php72-php-mbstring php72-php-fpm php72-php-pear php72-php-pecl-mongodb -y
+echo 'error_log=/var/log/php_errors.log
+error_log=/var/log/php_errors.log
+error_log=/var/log/php_errors.log'  >> /etc/opt/remi/php72/php.d/60-soapcreative.ini
+yum install php72-php-fpm.x86_64 -y
+systemctl enable php72-php-fpm.service
+service php72-php-fpm start
+yum install mod_fcgid -y
+#NOW CONFIG THE LOGS
 
-yum install epel-release
+#install memcached module
+yum install php72-php-pecl-igbinary.x86_64 -y
+yum install php72-php-memcached -y
 
-# yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+#enable services
+systemctl enable httpd
+systemctl enable memcached
+systemctl enable php72-php-fpm
 
-# yum install yum-utils
 
-# yum-config-manager --enable remi-php72
+#now restart everything
+service httpd restart
+service php72-php-fpm restart
 
-# yum update
-
-# yum install php72
-
-# yum install php72-php-process php72-php-pdo php72-php-mysqlnd php72-php-imap php72-php-devel php72-php-bcmath php72-php-pecl-imagick php72-php-intl php72-php-pecl-jsonc php72-php-pecl-jsonc-devel php72-php-process php72-php-xml php72-php-xmlrpc php72-php-tidy php72-php-mcrypt php72-php-gd php72-php-pecl-memcache php72-php-pecl-ssh2 php72-php-mbstring php72-php-fpm php72-php-pear php72-php-pecl-mongodb
-
-# echo 'error_log=/var/log/php_errors.log
-# error_log=/var/log/php_errors.log
-# error_log=/var/log/php_errors.log'  >> /etc/opt/remi/php72/php.d/60-soapcreative.ini
-
-# yum install php72-php-fpm.x86_64
-
-# systemctl enable php72-php-fpm.service
-
-# service php72-php-fpm start
-
-# yum install mod_fcgid -y
+#create a file that we can test off
+echo '<html>
+<head>Test</head>
+<body>
+<h1>This is my test file</hq>
+<p>If you can see this then apache should be running</p>
+<?php phpinfo(); >
+</body>
+</html>' >> /var/www/html/index.php
